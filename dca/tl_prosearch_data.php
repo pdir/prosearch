@@ -10,8 +10,8 @@ $GLOBALS['TL_DCA']['tl_prosearch_data'] = array(
         'sql' => array(
             'keys' => array(
                 'id' => 'primary',
-                'tags' => 'fulltext',
-                'search_content' => 'fulltext'
+                'dca,doTable,docId' => 'index',
+                'search_content' => 'index'
             )
         )
     ),
@@ -66,7 +66,7 @@ $GLOBALS['TL_DCA']['tl_prosearch_data'] = array(
 
         'search_content' => array
         (
-            'sql' => "text NULL"
+            'sql' => "mediumtext NULL"
         ),
 
         'clicks' => array
@@ -80,7 +80,7 @@ $GLOBALS['TL_DCA']['tl_prosearch_data'] = array(
         ),
 
         'tags' => array(
-            'sql' => "varchar(1024) NOT NULL default ''"
+            'sql' => "mediumtext NULL"
         ),
 
         'blocked' => array(
