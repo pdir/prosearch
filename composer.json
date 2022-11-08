@@ -1,5 +1,5 @@
 {
-	"name": "alnv/prosearch",
+	"name": "pdir/prosearch",
 	"description": "ProSearch - Backend search for Contao CMS",
 	"keywords": [ "contao", "backend", "search", "filter", "tags" ],
 	"type": "contao-module",
