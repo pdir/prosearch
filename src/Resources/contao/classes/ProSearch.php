@@ -265,7 +265,6 @@ class ProSearch extends ProSearchDataContainer
      */
     public function setCoreModules()
     {
-
         foreach ($this->modules as $k => $module) {
 
             $label = $GLOBALS['TL_LANG']['MOD'][$k];
@@ -282,7 +281,6 @@ class ProSearch extends ProSearchDataContainer
      */
     public function deleteModulesFromIndex()
     {
-
         $activeModules = deserialize(Config::get('searchIndexModules')) ? deserialize(Config::get('searchIndexModules')) : array();
         $coreModulesArr = Helper::pluckModules($this->coreModules);
         $toDeleteArr = array_diff($coreModulesArr, $activeModules);

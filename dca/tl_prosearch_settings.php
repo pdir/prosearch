@@ -22,28 +22,30 @@ $GLOBALS['TL_DCA']['tl_prosearch_settings'] = array(
     ),
 
     // Palettes
-    'palettes' => array
-    (
-        'default' => '{settings_legend},searchIndexModules,addDescriptionToSearchContent,createIndex'
-    ),
+    'palettes' => [
+        'default' => '{settings_legend},searchIndexModules,addDescriptionToSearchContent,preventOpenSearchListAsPopup,createIndex'
+    ],
 
     // Fields
     'fields' => array
     (
-        'searchIndexModules' => array
-        (
+        'searchIndexModules' => [
             'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['searchIndexModules'],
             'inputType' => 'checkbox',
-            'options_callback' => array('ProSearch', 'loadModules'),
-            'eval' => array('multiple' => true),
+            'options_callback' => ['ProSearch', 'loadModules'],
+            'eval' => ['multiple' => true],
             'sql' => "blob NULL"
-        ),
+        ],
 
         'addDescriptionToSearchContent' => array(
-
             'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['addDescriptionToSearchContent'],
             'inputType' => 'checkbox',
         ),
+
+        'preventOpenSearchListAsPopup' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['preventOpenSearchListAsPopup'],
+            'inputType' => 'checkbox',
+        ],
 
         'createIndex' => array(
             'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['createIndex'],
@@ -110,16 +112,15 @@ class tl_prosearch_settings extends ProSearch
                     echo json_encode($data);
                     exit;
 
-                }else{
-
+                }
+                else
+                {
                     $data = array('state' => 'success', 'table' => $tableToIndex, 'page' => $pageNum, 'left' => 0);
                     header('Content-type: application/json');
                     echo json_encode($data);
                     exit;
 
                 }
-
-
             }
 
             if( $count < $limit )

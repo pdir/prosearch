@@ -2,6 +2,7 @@
 
 namespace ProSearch;
 
+use Contao\Config;
 use Contao\DataContainer;
 use Contao\Image;
 
@@ -35,10 +36,8 @@ class ProSearchDataContainer extends DataContainer
      */
     public function createButtons($arrRow)
     {
-
         $strTable = $arrRow['dca'];
 		$this->loadDataContainer($strTable);
-
 
         if (empty($GLOBALS['TL_DCA'][$strTable]['list']['operations']))
         {
@@ -78,11 +77,29 @@ class ProSearchDataContainer extends DataContainer
                 }
             }
 
-            $title = strlen($arrRow['title']) > 100 ? substr($arrRow['title'],0,100).'…' : $arrRow['title'];
-            $arrRow['dynTable'] = null; // reset dyntable if not needed
+            // get the config switch
+            $configPopup = (bool)Config::get('preventOpenSearchListAsPopup');
+            // reset dyntable if not needed
+            $arrRow['dynTable'] = null;
 
-            #$return .= '<div class="title"><span class="icon" title="'.strtoupper($arrRow['shortcut']).'">'.$arrRow['icon'].'</span><a href="'.$this->addToSearchUrl($arrRow, $queryStr).'&popup=1" class="search-result" tabindex="1" onclick="Backend.openModalIframe({\'width\':960,\'title\':\''.$arrRow['title'].'\',\'url\':this.href});return false"><span>'.mb_convert_encoding($title, 'UTF-8').'</span> <span class="info">'.$tagsStr.'</span></a></div>';
-            $return .= '<div class="title"><span class="icon" title="'.strtoupper($arrRow['shortcut']).'">'.$arrRow['icon'].'</span><a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" class="search-result" tabindex="1"><span>'.mb_convert_encoding($title, 'UTF-8').'</span> <span class="info">'.$tagsStr.'</span></a></div>';
+            // shorten the title
+            $title      = strlen($arrRow['title']) > 100 ? substr($arrRow['title'],0,100).'…' : $arrRow['title'];
+            $titleUtf8  = mb_convert_encoding($title, 'UTF-8');
+            $shortcut   = strtoupper($arrRow['shortcut']);
+            $icon       = $arrRow['icon'];
+            $href       = $this->addToSearchUrl($arrRow, $queryStr) . (!$configPopup ? '&popup=1' : '');
+            $onclick    = (!$configPopup ? "onclick=\"GZM.openModalIframe({'width':960,'title':'$titleUtf8','url':this.href});return false\"" : '');
+
+            // create the list item for the result window
+            $listItem = <<<HTML
+<div class="title">
+    <span class="icon" title="$shortcut">$icon</span>
+    <a href="$href" class="search-result" tabindex="1"$onclick><span>$titleUtf8</span> 
+        <span class="info">$tagsStr</span>
+    </a>
+</div>
+HTML;
+            $return .= $listItem;
         }
 
         $return .= '<div class="operations">';
@@ -186,7 +203,7 @@ class ProSearchDataContainer extends DataContainer
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             $attributes = ($operations['show']['attributes'] != '') ? ' ' . ltrim(sprintf($operations['show']['attributes'], $id, $id)) : '';
             $queryStr = $href.$id.$table.'&amp;popup=1';
-            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.specialchars(str_replace("'", "\\'", sprintf($arrRow['title'], $arrRow['docId']))).'\',\'url\':this.href});return false"'.$attributes.'>'.Image::getHtml($icon).'</a> ';
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1" onclick="GZM.openModalIframe({\'width\':768,\'title\':\''.specialchars(str_replace("'", "\\'", sprintf($arrRow['title'], $arrRow['docId']))).'\',\'url\':this.href});return false"'.$attributes.'>'.Image::getHtml($icon).'</a> ';
         }
 
         if( $operations['show'] && $arrRow['dca'] == 'tl_files' )
@@ -195,7 +212,7 @@ class ProSearchDataContainer extends DataContainer
             $icon = 'show.gif';
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             //$attributes = ($operations['show']['attributes'] != '') ? ' ' . ltrim(sprintf($operations['show']['attributes'], $id, $id)) : '';
-            $return .= '<a href="'.$href.'" tabindex="1" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.str_replace("'", "\\'", specialchars($arrRow['title'], false, true)).'\',\'url\':this.href,\'height\':500});return false" >'.Image::getHtml($icon).'</a>';
+            $return .= '<a href="'.$href.'" tabindex="1" onclick="GZM.openModalIframe({\'width\':768,\'title\':\''.str_replace("'", "\\'", specialchars($arrRow['title'], false, true)).'\',\'url\':this.href,\'height\':500});return false" >'.Image::getHtml($icon).'</a>';
         }
 
         $return .= '</div>';
@@ -263,8 +280,5 @@ class ProSearchDataContainer extends DataContainer
         }
 
         return TL_SCRIPT . $href . str_replace(' ', '%20', $strRequest);
-
-
     }
-
 }

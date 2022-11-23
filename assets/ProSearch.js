@@ -355,3 +355,62 @@
     });
 
 })();
+
+/**
+ * this is an extension to hide buttons in the modal window
+ *
+ * @type {{openModalIframe: GZM.openModalIframe}}
+ */
+var GZM =
+{
+    /**
+     * Open an iframe in a modal window
+     *
+     * @param {object} options An optional options object
+     */
+    openModalIframe: function(options) {
+        var opt = options || {},
+            maxWidth = (window.getSize().x - 20).toInt(),
+            maxHeight = (window.getSize().y - 137).toInt();
+        if (!opt.width || opt.width > maxWidth) opt.width = Math.min(maxWidth, 900);
+        if (!opt.height || opt.height > maxHeight) opt.height = maxHeight;
+
+        var M = new SimpleModal({
+            'width': opt.width,
+            'hideFooter': true,
+            'draggable': false,
+            'overlayOpacity': .7,
+            'onShow': function() {
+                document.body.setStyle('overflow', 'hidden');
+
+                // wait a little until the iframe is initialized
+                setTimeout(function()
+                {
+                    let iframe = document.querySelector('iframe');
+
+                    if(iframe)
+                    {
+                        iframe.addEventListener("load", function ()
+                        {
+                            let submitContainer = iframe.contentWindow.document.querySelector('div .tl_submit_container');
+
+                            if (submitContainer)
+                            {
+                                let splitButton = submitContainer.querySelector('div.split-button');
+
+                                if (splitButton) splitButton.remove();
+                            }
+                        });
+                    }
+                }, 100)
+            },
+            'onHide': function() { document.body.setStyle('overflow', 'auto'); }
+        });
+
+        M.show({
+            'title': opt.title,
+            'contents': '<iframe src="' + opt.url + '" width="100%" height="' + opt.height + '" frameborder="0"></iframe>',
+            'model': 'modal'
+        });
+    },
+}
