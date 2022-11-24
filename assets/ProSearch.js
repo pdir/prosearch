@@ -96,10 +96,10 @@
         
         //ie add origin 9
         if (!window.location.origin) {
-	        
-			window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
-			
-		}
+            
+            window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+            
+        }
         
         // get search data from search index
         var host = window.location.origin;
@@ -173,10 +173,10 @@
         var $template =
             '<div class="<%= cssClass %> <%= n %>">' +
                 '<div class="category-results">'+
-                	'<%= buttonsStr %>'+
+                    '<%= buttonsStr %>'+
                 '</div>'+
             '</div>';
-		
+        
         var render = _.template($template);
 
         return render(item);
@@ -190,7 +190,7 @@
      */
     function ItemsView(data)
     {
-	    	 
+             
         var options = {
             count: data.length
         };
@@ -203,8 +203,8 @@
 
             var category_label = shortcut_labels[category];
 
-	        $template += ItemsCategory(item, category_label);
-	        
+            $template += ItemsCategory(item, category_label);
+            
         });
 
         $template += endWrapper;
@@ -215,18 +215,18 @@
     }
     
     /**
-	 *
-	 */   
+     *
+     */   
     function ItemsCategory(item, category)
     {
-	    
-	    var $template = '';
+        
+        var $template = '';
 
-	    $template += '<div class="result-category"><div class="result-category-header"><%= category %></div>';
-	    
-	    _.each(item, function(row, i){
-							
-			row['n'] = i % 2 ? 'even' : 'odd';
+        $template += '<div class="result-category"><div class="result-category-header"><%= category %></div>';
+        
+        _.each(item, function(row, i){
+                            
+            row['n'] = i % 2 ? 'even' : 'odd';
             row['cssClass'] = 'result';
 
             if(i == 0)
@@ -240,22 +240,22 @@
             }
 
             $template += ItemView(row);
-		
-		});
-	    
-	    $template += '</div>';	  
-	    
-	    var render = _.template($template);
-	    var obj = {
-		    category: category
-	    };
+        
+        });
+        
+        $template += '</div>';      
+        
+        var render = _.template($template);
+        var obj = {
+            category: category
+        };
         return render(obj);
         
     }
 
     window.addEvent('domready', function() {
 
-	    var strHeaderTemplate = strProSearchHeaderTemplate ? strProSearchHeaderTemplate : '';
+        var strHeaderTemplate = strProSearchHeaderTemplate ? strProSearchHeaderTemplate : '';
         var _userSettings = UserSettings ? UserSettings : {};
         var shortcut = _userSettings.shortcut ? _userSettings.shortcut : 'alt+m';
 
@@ -320,97 +320,38 @@
             strHeaderTemplate = '';
         }
 
-	    // remove menu by escape key
-	    document.addEvent('keydown:keys(esc)', function(e){
-	
-	        e.preventDefault();
-			
-			var body = $$('body');
-			body.toggleClass('searchMenuActive');
-			
-	        // remove search
-	        if(!body.hasClass('searchMenuActive')[0])
-	        {		       
-		        var menu = document.getElementById("id_menu-overlay");
+        // remove menu by escape key
+        document.addEvent('keydown:keys(esc)', function(e){
+    
+            e.preventDefault();
+            
+            var body = $$('body');
+            body.toggleClass('searchMenuActive');
+            
+            // remove search
+            if(!body.hasClass('searchMenuActive')[0])
+            {               
+                var menu = document.getElementById("id_menu-overlay");
 
                 $$(document).removeEvent('keydown:keys(down)');
                 $$(document).removeEvent('keydown:keys(up)');
                 tabIndex = -1;
 
                 $(menu).destroy();
-	        }
-	        
-	
-	    });
-	    
-	    //add header btn
-	    var header = $$('#tmenu');
+            }
+            
+    
+        });
+        
+        //add header btn
+        var header = $$('#tmenu');
         header.appendHTML( strHeaderTemplate, 'top' );
         
         $$('#openProSearch').addEvent('click', function(e){
-	    	e.preventDefault();
-	        document.fireEvent('keydown:keys('+shortcut+')', e);    
+            e.preventDefault();
+            document.fireEvent('keydown:keys('+shortcut+')', e);    
         });
         
     });
 
 })();
-
-/**
- * this is an extension to hide buttons in the modal window
- *
- * @type {{openModalIframe: GZM.openModalIframe}}
- */
-var GZM =
-{
-    /**
-     * Open an iframe in a modal window
-     *
-     * @param {object} options An optional options object
-     */
-    openModalIframe: function(options) {
-        var opt = options || {},
-            maxWidth = (window.getSize().x - 20).toInt(),
-            maxHeight = (window.getSize().y - 137).toInt();
-        if (!opt.width || opt.width > maxWidth) opt.width = Math.min(maxWidth, 900);
-        if (!opt.height || opt.height > maxHeight) opt.height = maxHeight;
-
-        var M = new SimpleModal({
-            'width': opt.width,
-            'hideFooter': true,
-            'draggable': false,
-            'overlayOpacity': .7,
-            'onShow': function() {
-                document.body.setStyle('overflow', 'hidden');
-
-                // wait a little until the iframe is initialized
-                setTimeout(function()
-                {
-                    let iframe = document.querySelector('iframe');
-
-                    if(iframe)
-                    {
-                        iframe.addEventListener("load", function ()
-                        {
-                            let submitContainer = iframe.contentWindow.document.querySelector('div .tl_submit_container');
-
-                            if (submitContainer)
-                            {
-                                let splitButton = submitContainer.querySelector('div.split-button');
-
-                                if (splitButton) splitButton.remove();
-                            }
-                        });
-                    }
-                }, 100)
-            },
-            'onHide': function() { document.body.setStyle('overflow', 'auto'); }
-        });
-
-        M.show({
-            'title': opt.title,
-            'contents': '<iframe src="' + opt.url + '" width="100%" height="' + opt.height + '" frameborder="0"></iframe>',
-            'model': 'modal'
-        });
-    },
-}

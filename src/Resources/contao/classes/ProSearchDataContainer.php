@@ -87,8 +87,8 @@ class ProSearchDataContainer extends DataContainer
             $titleUtf8  = mb_convert_encoding($title, 'UTF-8');
             $shortcut   = strtoupper($arrRow['shortcut']);
             $icon       = $arrRow['icon'];
-            $href       = $this->addToSearchUrl($arrRow, $queryStr) . (!$configPopup ? '&popup=1' : '');
-            $onclick    = (!$configPopup ? "onclick=\"GZM.openModalIframe({'width':960,'title':'$titleUtf8','url':this.href});return false\"" : '');
+            $href       = $this->addToSearchUrl($arrRow, $queryStr) . (!$configPopup ? '&popup=1&nb=1' : '');
+            $onclick    = (!$configPopup ? "onclick=\"Backend.openModalIframe({'width':960,'title':'$titleUtf8','url':this.href});return false\"" : '');
 
             // create the list item for the result window
             $listItem = <<<HTML
@@ -202,8 +202,8 @@ HTML;
             $icon = 'show.gif';
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             $attributes = ($operations['show']['attributes'] != '') ? ' ' . ltrim(sprintf($operations['show']['attributes'], $id, $id)) : '';
-            $queryStr = $href.$id.$table.'&amp;popup=1';
-            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1" onclick="GZM.openModalIframe({\'width\':768,\'title\':\''.specialchars(str_replace("'", "\\'", sprintf($arrRow['title'], $arrRow['docId']))).'\',\'url\':this.href});return false"'.$attributes.'>'.Image::getHtml($icon).'</a> ';
+            $queryStr = $href.$id.$table.'&amp;popup=1&amp;nb=1';
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.specialchars(str_replace("'", "\\'", sprintf($arrRow['title'], $arrRow['docId']))).'\',\'url\':this.href});return false"'.$attributes.'>'.Image::getHtml($icon).'</a> ';
         }
 
         if( $operations['show'] && $arrRow['dca'] == 'tl_files' )
@@ -212,7 +212,7 @@ HTML;
             $icon = 'show.gif';
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             //$attributes = ($operations['show']['attributes'] != '') ? ' ' . ltrim(sprintf($operations['show']['attributes'], $id, $id)) : '';
-            $return .= '<a href="'.$href.'" tabindex="1" onclick="GZM.openModalIframe({\'width\':768,\'title\':\''.str_replace("'", "\\'", specialchars($arrRow['title'], false, true)).'\',\'url\':this.href,\'height\':500});return false" >'.Image::getHtml($icon).'</a>';
+            $return .= '<a href="'.$href.'" tabindex="1" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.str_replace("'", "\\'", specialchars($arrRow['title'], false, true)).'\',\'url\':this.href,\'height\':500});return false" >'.Image::getHtml($icon).'</a>';
         }
 
         $return .= '</div>';
