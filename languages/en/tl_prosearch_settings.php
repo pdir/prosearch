@@ -15,10 +15,6 @@ $GLOBALS['TL_LANG']['tl_prosearch_settings']['prosearchLicense'] = [
     'Please enter valid license key',
     '<a href="#" target="_blank"><strong>Buy</strong></a> license key.'
 ];
-$GLOBALS['TL_LANG']['tl_prosearch_settings']['preventOpenSearchListAsPopup'] = [
-    'Do not open links in the results list as a popup',
-    'By default, links from the results list will open in a popup window when clicked. If this option is enabled, then the link will be opened in the default Edit view.'
-];
 $GLOBALS['TL_LANG']['tl_prosearch_settings']['addDescriptionToSearchContent'] = [
     'Add text to Search',
     'This Option can slow down the search.'

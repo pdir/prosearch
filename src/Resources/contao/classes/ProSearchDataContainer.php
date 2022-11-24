@@ -2,7 +2,7 @@
 
 namespace ProSearch;
 
-use Contao\Config;
+use Contao\BackendUser;
 use Contao\DataContainer;
 use Contao\Image;
 
@@ -37,7 +37,7 @@ class ProSearchDataContainer extends DataContainer
     public function createButtons($arrRow)
     {
         $strTable = $arrRow['dca'];
-		$this->loadDataContainer($strTable);
+        $this->loadDataContainer($strTable);
 
         if (empty($GLOBALS['TL_DCA'][$strTable]['list']['operations']))
         {
@@ -47,7 +47,7 @@ class ProSearchDataContainer extends DataContainer
         $return = '';
 
         $operations = $GLOBALS['TL_DCA'][$strTable]['list']['operations'];
-		$mode = $GLOBALS['TL_DCA'][$strTable]['list']['sorting']['mode'];
+        $mode = $GLOBALS['TL_DCA'][$strTable]['list']['sorting']['mode'];
 
         $id = specialchars(rawurldecode($arrRow['docId']));
         $id = $id ? '&amp;id='.$id : '';
@@ -78,7 +78,9 @@ class ProSearchDataContainer extends DataContainer
             }
 
             // get the config switch
-            $configPopup = (bool)Config::get('preventOpenSearchListAsPopup');
+            $objUser = BackendUser::getInstance();
+            $configPopup = (bool)$objUser->preventOpenSearchListAsPopup;
+
             // reset dyntable if not needed
             $arrRow['dynTable'] = null;
 
@@ -110,55 +112,55 @@ HTML;
         
         if( is_array($ctableArr) && !empty($ctableArr) && $mode != 5 && $fmTable != 'fm')
         {
-	        
-	        $href = '';
-	        $icon = '';
-	        $ptable = '';
-	        $arrRow['dynTable'] = null;
-	        
-	        foreach($ctableArr as $ctable)
-	        {
-		       $href = '&amp;table='.$ctable.''; 
-		       $icon = 'edit.gif';
-		       $ptable = '';
-		       
-	        }
-	        
-	        $queryStr = $href.$id.$ptable;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+            
+            $href = '';
+            $icon = '';
+            $ptable = '';
+            $arrRow['dynTable'] = null;
+            
+            foreach($ctableArr as $ctable)
+            {
+               $href = '&amp;table='.$ctable.''; 
+               $icon = 'edit.gif';
+               $ptable = '';
+               
+            }
+            
+            $queryStr = $href.$id.$ptable;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
 
         }
-		
-		// go to ietm
+        
+        // go to ietm
         if( $operations['editheader'] || $operations['edit'] )
         {
 
             $href = 'act=edit';
             $icon = 'header.gif';
-			$ptable = $table;
+            $ptable = $table;
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             $queryStr = $href.$id.$ptable;
             $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
         }
-		
-		if( $fmTable == 'fm' )
-		{
-			// list view
-			$href = '&amp;table=tl_content';
-			$fmType = '&view=list';	
-			$icon = $GLOBALS['PS_PUBLIC_PATH'].'images/page.png';
-			$queryStr = $href.$fmType.$id;
-			$arrRow['dynTable'] = null;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
-	        
-	        //detailview
-			$icon = $GLOBALS['PS_PUBLIC_PATH'].'images/detail.png';
-			$fmType = '&view=detail';	
-			$queryStr = $href.$fmType.$id;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+        
+        if( $fmTable == 'fm' )
+        {
+            // list view
+            $href = '&amp;table=tl_content';
+            $fmType = '&view=list';    
+            $icon = $GLOBALS['PS_PUBLIC_PATH'].'images/page.png';
+            $queryStr = $href.$fmType.$id;
+            $arrRow['dynTable'] = null;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+            
+            //detailview
+            $icon = $GLOBALS['PS_PUBLIC_PATH'].'images/detail.png';
+            $fmType = '&view=detail';    
+            $queryStr = $href.$fmType.$id;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
 
-		}
-		
+        }
+        
         if($arrRow['doTable'] == 'page')
         {
 
@@ -260,12 +262,12 @@ HTML;
             {
                 unset($queries[$k]);
             }
-			
-			if($key == 'searchQuery')
+            
+            if($key == 'searchQuery')
             {
                 unset($queries[$k]);
             }
-			
+            
             if (in_array($key, $arrUnset) || preg_match('/(^|&(amp;)?)' . preg_quote($key, '/') . '=/i', $strRequest))
             {
                 unset($queries[$k]);

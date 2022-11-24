@@ -15,10 +15,6 @@ $GLOBALS['TL_LANG']['tl_prosearch_settings']['prosearchLicense'] = [
     'Lizenzschlüssel eingeben',
     'Lizenzschlüssel <a href="#" target="_blank"><strong>kaufen</strong></a>'
 ];
-$GLOBALS['TL_LANG']['tl_prosearch_settings']['preventOpenSearchListAsPopup'] = [
-    'Links im Ergebnisfenster nicht als Popup öffnen',
-    'Standardmäßig werden die Links aus der Ergebnisliste bei Klick in einem Popup-Window geöffnet. Wird diese Option aktiviert, dann wird der Link in der Standard-Edit-Ansicht geöffnet.'
-];
 $GLOBALS['TL_LANG']['tl_prosearch_settings']['addDescriptionToSearchContent'] = [
     'Texte in die Suche aufnehmen',
     'Diese Option kann die Suche verlangsamen, dafür werden Text Spalten indiziert.'

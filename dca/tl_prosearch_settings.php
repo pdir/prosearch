@@ -23,7 +23,7 @@ $GLOBALS['TL_DCA']['tl_prosearch_settings'] = array(
 
     // Palettes
     'palettes' => [
-        'default' => '{settings_legend},searchIndexModules,addDescriptionToSearchContent,preventOpenSearchListAsPopup,createIndex'
+        'default' => '{settings_legend},searchIndexModules,addDescriptionToSearchContent,createIndex'
     ],
 
     // Fields
@@ -41,11 +41,6 @@ $GLOBALS['TL_DCA']['tl_prosearch_settings'] = array(
             'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['addDescriptionToSearchContent'],
             'inputType' => 'checkbox',
         ),
-
-        'preventOpenSearchListAsPopup' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['preventOpenSearchListAsPopup'],
-            'inputType' => 'checkbox',
-        ],
 
         'createIndex' => array(
             'label' => &$GLOBALS['TL_LANG']['tl_prosearch_settings']['createIndex'],
