@@ -26,6 +26,6 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['keyboard_shortcut'] = [
 $GLOBALS['TL_DCA']['tl_user']['fields']['preventOpenSearchListAsPopup'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user']['preventOpenSearchListAsPopup'],
     'inputType' => 'checkbox',
-    'eval' => ['tl_class' => 'w50 cbx'],
+    'eval' => ['tl_class' => 'w50 m12 cbx'],
     'sql' => "char(1) NOT NULL default ''"
 ];
