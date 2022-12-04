@@ -2,6 +2,7 @@
 
 namespace ProSearch;
 
+use Contao\BackendUser;
 use Contao\DataContainer;
 use Contao\Image;
 
@@ -35,10 +36,8 @@ class ProSearchDataContainer extends DataContainer
      */
     public function createButtons($arrRow)
     {
-
         $strTable = $arrRow['dca'];
-		$this->loadDataContainer($strTable);
-
+        $this->loadDataContainer($strTable);
 
         if (empty($GLOBALS['TL_DCA'][$strTable]['list']['operations']))
         {
@@ -48,7 +47,7 @@ class ProSearchDataContainer extends DataContainer
         $return = '';
 
         $operations = $GLOBALS['TL_DCA'][$strTable]['list']['operations'];
-		$mode = $GLOBALS['TL_DCA'][$strTable]['list']['sorting']['mode'];
+        $mode = $GLOBALS['TL_DCA'][$strTable]['list']['sorting']['mode'];
 
         $id = specialchars(rawurldecode($arrRow['docId']));
         $id = $id ? '&amp;id='.$id : '';
@@ -78,10 +77,31 @@ class ProSearchDataContainer extends DataContainer
                 }
             }
 
-            $title = strlen($arrRow['title']) > 100 ? substr($arrRow['title'],0,100).'…' : $arrRow['title'];
-            $arrRow['dynTable'] = null; // reset dyntable if not needed
+            // get the config switch
+            $objUser = BackendUser::getInstance();
+            $configPopup = (bool)$objUser->preventOpenSearchListAsPopup;
 
-            $return .= '<div class="title"><span class="icon" title="'.strtoupper($arrRow['shortcut']).'">'.$arrRow['icon'].'</span><a href="'.$this->addToSearchUrl($arrRow, $queryStr).'&popup=1" class="search-result" tabindex="1" onclick="Backend.openModalIframe({\'width\':960,\'title\':\''.$arrRow['title'].'\',\'url\':this.href});return false"><span>'.mb_convert_encoding($title, 'UTF-8').'</span> <span class="info">'.$tagsStr.'</span></a></div>';
+            // reset dyntable if not needed
+            $arrRow['dynTable'] = null;
+
+            // shorten the title
+            $title      = strlen($arrRow['title']) > 100 ? substr($arrRow['title'],0,100).'…' : $arrRow['title'];
+            $titleUtf8  = mb_convert_encoding($title, 'UTF-8');
+            $shortcut   = strtoupper($arrRow['shortcut']);
+            $icon       = $arrRow['icon'];
+            $href       = $this->addToSearchUrl($arrRow, $queryStr) . (!$configPopup ? '&popup=1&nb=1' : '');
+            $onclick    = (!$configPopup ? "onclick=\"Backend.openModalIframe({'width':960,'title':'$titleUtf8','url':this.href});return false\"" : '');
+
+            // create the list item for the result window
+            $listItem = <<<HTML
+<div class="title">
+    <span class="icon" title="$shortcut">$icon</span>
+    <a href="$href" class="search-result" tabindex="1"$onclick><span>$titleUtf8</span> 
+        <span class="info">$tagsStr</span>
+    </a>
+</div>
+HTML;
+            $return .= $listItem;
         }
 
         $return .= '<div class="operations">';
@@ -92,55 +112,55 @@ class ProSearchDataContainer extends DataContainer
         
         if( is_array($ctableArr) && !empty($ctableArr) && $mode != 5 && $fmTable != 'fm')
         {
-	        
-	        $href = '';
-	        $icon = '';
-	        $ptable = '';
-	        $arrRow['dynTable'] = null;
-	        
-	        foreach($ctableArr as $ctable)
-	        {
-		       $href = '&amp;table='.$ctable.''; 
-		       $icon = 'edit.gif';
-		       $ptable = '';
-		       
-	        }
-	        
-	        $queryStr = $href.$id.$ptable;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+            
+            $href = '';
+            $icon = '';
+            $ptable = '';
+            $arrRow['dynTable'] = null;
+            
+            foreach($ctableArr as $ctable)
+            {
+               $href = '&amp;table='.$ctable.''; 
+               $icon = 'edit.gif';
+               $ptable = '';
+               
+            }
+            
+            $queryStr = $href.$id.$ptable;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
 
         }
-		
-		// go to ietm
+        
+        // go to ietm
         if( $operations['editheader'] || $operations['edit'] )
         {
 
             $href = 'act=edit';
             $icon = 'header.gif';
-			$ptable = $table;
+            $ptable = $table;
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             $queryStr = $href.$id.$ptable;
             $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
         }
-		
-		if( $fmTable == 'fm' )
-		{
-			// list view
-			$href = '&amp;table=tl_content';
-			$fmType = '&view=list';	
-			$icon = $GLOBALS['PS_PUBLIC_PATH'].'images/page.png';
-			$queryStr = $href.$fmType.$id;
-			$arrRow['dynTable'] = null;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
-	        
-	        //detailview
-			$icon = $GLOBALS['PS_PUBLIC_PATH'].'images/detail.png';
-			$fmType = '&view=detail';	
-			$queryStr = $href.$fmType.$id;
-	        $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+        
+        if( $fmTable == 'fm' )
+        {
+            // list view
+            $href = '&amp;table=tl_content';
+            $fmType = '&view=list';    
+            $icon = $GLOBALS['PS_PUBLIC_PATH'].'images/page.png';
+            $queryStr = $href.$fmType.$id;
+            $arrRow['dynTable'] = null;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
+            
+            //detailview
+            $icon = $GLOBALS['PS_PUBLIC_PATH'].'images/detail.png';
+            $fmType = '&view=detail';    
+            $queryStr = $href.$fmType.$id;
+            $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1">'.Image::getHtml($icon,$arrRow['title']).'</a>';
 
-		}
-		
+        }
+        
         if($arrRow['doTable'] == 'page')
         {
 
@@ -184,7 +204,7 @@ class ProSearchDataContainer extends DataContainer
             $icon = 'show.gif';
             $arrRow['dynTable'] = null; // reset dyntable if not needed
             $attributes = ($operations['show']['attributes'] != '') ? ' ' . ltrim(sprintf($operations['show']['attributes'], $id, $id)) : '';
-            $queryStr = $href.$id.$table.'&amp;popup=1';
+            $queryStr = $href.$id.$table.'&amp;popup=1&amp;nb=1';
             $return .= '<a href="'.$this->addToSearchUrl($arrRow, $queryStr).'" tabindex="1" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.specialchars(str_replace("'", "\\'", sprintf($arrRow['title'], $arrRow['docId']))).'\',\'url\':this.href});return false"'.$attributes.'>'.Image::getHtml($icon).'</a> ';
         }
 
@@ -242,12 +262,12 @@ class ProSearchDataContainer extends DataContainer
             {
                 unset($queries[$k]);
             }
-			
-			if($key == 'searchQuery')
+            
+            if($key == 'searchQuery')
             {
                 unset($queries[$k]);
             }
-			
+            
             if (in_array($key, $arrUnset) || preg_match('/(^|&(amp;)?)' . preg_quote($key, '/') . '=/i', $strRequest))
             {
                 unset($queries[$k]);
@@ -262,8 +282,5 @@ class ProSearchDataContainer extends DataContainer
         }
 
         return TL_SCRIPT . $href . str_replace(' ', '%20', $strRequest);
-
-
     }
-
 }
